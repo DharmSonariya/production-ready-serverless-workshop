@@ -19,7 +19,7 @@ const init = async () => {
         process.env.AWS_SESSION_TOKEN = credentials.sessionToken
     }
 
-    console.log('AWS credential loaded',process.env)
+    console.log('AWS credential loaded')
 
     initialized = true
 }
