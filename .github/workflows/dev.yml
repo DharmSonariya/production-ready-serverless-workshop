@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: run integration test
-        run: npm run test --forceExit
+        run: npm run test --detectOpenHandles
 
       - name: deploy to dev
         run: npx sls deploy
