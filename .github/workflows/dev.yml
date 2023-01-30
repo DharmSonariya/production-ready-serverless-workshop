@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: run integration test
-        run: npm run test
+        run: npm run test --forceExit
 
       - name: deploy to dev
         run: npx sls deploy
