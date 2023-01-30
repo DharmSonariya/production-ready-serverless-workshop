@@ -10,6 +10,15 @@ custom:
 provider:
   name: aws
   runtime: nodejs16.x
+  environment:
+    serviceName: ${self:service}
+    stage: ${sls:stage}
+    rest_api_url:
+      Fn::Join:
+        - ""
+        - - https://
+          - !Ref ApiGatewayRestApi
+          - .execute-api.${aws:region}.amazonaws.com/${sls:stage}
   iam:
     role:
       statements:
@@ -24,16 +33,10 @@ provider:
           Resource:
             - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${self:service}/${sls:stage}/get-restaurants/config
             - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${self:service}/${sls:stage}/search-restaurants/config
-
-  environment:
-    rest_api_url:
-      Fn::Join:
-        - ""
-        - - https://
-          - !Ref ApiGatewayRestApi
-          - .execute-api.${aws:region}.amazonaws.com/${sls:stage}
-    serviceName: ${self:service}
-    stage: ${sls:stage}
+            - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${self:service}/${sls:stage}/search-restaurants/secretString
+        - Effect: Allow
+          Action: kms:Decrypt
+          Resource: ${ssm:/${self:service}/${sls:stage}/kmsArn}
 
 functions:
   get-index:
