@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: run integration test
-        run: npm run test --detectOpenHandles
+        run: npm run test
 
       - name: deploy to dev
         run: npx sls deploy
