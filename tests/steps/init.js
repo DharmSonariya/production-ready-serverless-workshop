@@ -19,6 +19,7 @@ const init = async () => {
 
     if (credentials.sessionToken) {
         process.env.AWS_SESSION_TOKEN = credentials.sessionToken
+    console.error = jest.fn()
     }
 
     console.log('AWS credential loaded')
