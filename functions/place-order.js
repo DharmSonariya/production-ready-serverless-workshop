@@ -1,16 +1,21 @@
+const CorrelationIds = require('@dazn/lambda-powertools-correlation-ids')
 const Log = require('@dazn/lambda-powertools-logger')
-const EventBridge = require('aws-sdk/clients/eventbridge')
+const wrap = require('@dazn/lambda-powertools-pattern-basic')
 const XRay = require('aws-xray-sdk-core')
-const eventBridge = XRay.captureAWSClient(new EventBridge())
+const eventBridge = XRay.captureAWSClient(require('@dazn/lambda-powertools-eventbridge-client'))
 const chance = require('chance').Chance()
 
 const busName = process.env.bus_name
 
-module.exports.handler = async (event) => {
+module.exports.handler = wrap(async (event) => {
     const restaurantName = JSON.parse(event.body).restaurantName
 
     const orderId = chance.guid()
-    Log.debug('placing order...', { orderId, restaurantName })
+    const userId = event.requestContext.authorizer.claims.sub
+    CorrelationIds.set('userId', userId)
+    CorrelationIds.set('orderId', orderId)
+    CorrelationIds.set('restaurantName', restaurantName)
+    Log.debug('placing order...')
 
     await eventBridge.putEvents({
         Entries: [{
@@ -36,3 +41,4 @@ module.exports.handler = async (event) => {
 
     return response
 }
+)
